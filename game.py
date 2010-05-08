@@ -9,6 +9,7 @@ from mover import RandomMover
 from terrain import TerrainData
 from terrain.generators import MeteorTerrainGenerator, Smoother
 from terrain.generators import PlasmaFractalGenerator
+from terrain.climate import LatitudeClimateBands
 
 
 class Game:
@@ -49,7 +50,7 @@ class Game:
                 self.gameGrid.add_node((x, y, 0), terrain)
 
     def generate_terrain(self):
-        generator = PlasmaFractalGenerator(200)
+        generator = PlasmaFractalGenerator(400)
         generator.apply(self.gameGrid)
         self.gameGrid.connect_grid()
 
@@ -58,15 +59,23 @@ class Game:
         generator.apply(self.gameGrid)
         smoother.apply(self.gameGrid)
 
+        climatizer = LatitudeClimateBands()
+        climatizer.apply(self.gameGrid)
+
     # Updates the main game surface (SLOW!)
     def update_terrain_surf(self):
         for x in xrange(0, self.xGrid):
             for y in xrange(0, self.yGrid):
                 loc = (x, y, self.view.z)
-                terrainNode = self.gameGrid.get_node_at(loc)
-                if terrainNode is not None:
-                    rect = pygame.Rect(x, y, 1, 1)
-                    terrainNode.contents.render(rect, self.terrainSurf)
+                self.update_terrain_node(loc)
+
+    def update_terrain_node(self, loc):
+        x,y,z = loc
+        terrainNode = self.gameGrid.get_node_at(loc)
+        if terrainNode is not None:
+            rect = pygame.Rect(x, y, 1, 1)
+            terrainNode.contents.render(rect, self.terrainSurf)
+
 
     # updates the screen to show the appropriate visible nodes
     def update_display(self):

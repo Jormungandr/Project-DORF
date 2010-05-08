@@ -68,7 +68,7 @@ class MeteorTerrainGenerator(TerrainGenerator):
                 """
                 terrainData = node.contents
                 if sqrDistance < sqrStrikeRadius:
-                    change = math.pow(math.cos(
+                    change = math.pow(math.sin(
                         sqrDistance / sqrStrikeRadius * math.pi * 3), 3)
                     change *= (1 - (sqrDistance / sqrStrikeRadius))
                     change *= strikeRadius * 3
